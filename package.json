@@ -1,0 +1,34 @@
+{
+  "name": "tryout",
+  "version": "1.0.0",
+  "description": "Dieses Projekt ist ein erster Versuch, die **bpmn-js** Bibliothek zu erweitern, um mit **Custom-Elementen** Conversation- und Choreographie-Diagramme zu erstellen.",
+  "keywords": [
+    "bpmn"
+  ],
+  "homepage": "https://github.com/YannikSippl/ConversationAndChoreographyElementsinBPMN-js#readme",
+  "bugs": {
+    "url": "https://github.com/YannikSippl/ConversationAndChoreographyElementsinBPMN-js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YannikSippl/ConversationAndChoreographyElementsinBPMN-js.git"
+  },
+  "license": "ISC",
+  "author": "Yannik Sippl",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "start": "node index.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "bpmn-js": "^18.12.0",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "vite": "^7.3.1"
+  }
+}
