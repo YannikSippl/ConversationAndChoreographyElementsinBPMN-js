@@ -11,7 +11,7 @@ Dieses Projekt ist ein erster Versuch, die **bpmn-js** Bibliothek zu erweitern, 
 ## Roadmap
 
 ✅ Checkliste für neue Elemente
-- [ ] Meta-Model definiert (JSON)
+- [x] Meta-Model definiert (JSON)
 - [ ] Renderer erstellt (wie sieht es aus?)
 - [ ] Factory erstellt (wie wird es erzeugt?)
 - [ ] Rules definiert (wo darf es platziert werden?)
