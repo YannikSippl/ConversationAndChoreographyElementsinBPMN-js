@@ -1,0 +1,39 @@
+{
+    "name": "ConversationExtension",
+    "prefix": "conversation",
+    "types":[
+        {
+            "name": "ConversationNode",
+            "superClass": "bpmn:Element",
+            "properties": [
+                {
+                    "name": "name",
+                    "type": "String"
+                },
+                {
+                    "name": "participants",
+                    "type": "String",
+                    "isMany": true
+                }
+            ]  
+        },
+        {
+            "name": "ConversationLink",
+            "superClass": "bpmn:Connection",
+            "properties": [
+                {
+                    "name": "name",
+                    "type": "String"
+                },
+                {
+                    "name": "source",
+                    "type": "ConversationNode"
+                },
+                {
+                    "name": "target",
+                    "type": "ConversationNode"
+                }
+            ]
+        }
+    ]
+}
