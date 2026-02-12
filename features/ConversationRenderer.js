@@ -8,7 +8,6 @@ import {
 
 
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import { getCirclePath } from 'bpmn-js/lib/draw/BpmnRenderUtil';
 
 const HIGH_PRIORITY = 1500;
 
@@ -39,10 +38,10 @@ export default class ConversationRenderer extends BaseRenderer {
         return shape;
     }
 
-    // use circle path for ConversationNode borders [NEEDS A FIX SO TO MATCH HEXAGON BORDERS]
+    // use hexagon path for ConversationNode borders
     getShapePath(shape) {
         if (is(shape, 'conversation:ConversationNode')) {
-            return getCirclePath(shape);
+            return getHexagonPath(shape);
         }
     }
 }
@@ -59,7 +58,7 @@ ConversationRenderer.$inject = ['eventBus', 'bpmnRenderer'];
 function drawHexagon(parentNode, element) {
     const hexagon = svgCreate('polygon');
 
-    const points = widthHeightToPoints(element.x, element.y, element.width, element.height);
+    const points = widthHeightToPoints(element.width, element.height);
     svgAttr(hexagon, {
         points,
         fill: '#1302fa',
@@ -72,16 +71,47 @@ function drawHexagon(parentNode, element) {
     return hexagon;
 };
 
-//helper for creating the points for  a hexagon shape
-function widthHeightToPoints(x, y, width, height) {
-    const points = [
-        { x: x + width / 2, y: y + 0 },
-        { x: x + width, y: y + height / 4 },
-        { x: x + width, y: y + (3 * height) / 4 },
-        { x: x + width / 2, y: y + height },
-        { x: x + 0, y: y + (3 * height) / 4 },
-        { x: x + 0, y: y + height / 4 }
-    ]
-    return points.map(p => `${p.x},${p.y}`).join(' ');
+//helpers for creating the points for  a hexagon shape
+
+//combines both helpers below
+function widthHeightToPoints(width, height) {
+    return widthHeightToPointObjects(width, height)
+        .map(p => `${p.x},${p.y}`)
+        .join(' ');
 };
+
+// returns 6 hexagon points as an object
+function widthHeightToPointObjects(width, height) {
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    // Regular flat-top hexagon: width = 2 * r, height = sqrt(3) * r
+    const r = Math.min(width / 2, height / Math.sqrt(3));
+    const dy = (Math.sqrt(3) / 2) * r;
+
+    const points = [
+        { x: centerX - r / 2, y: centerY - dy },
+        { x: centerX + r / 2, y: centerY - dy },
+        { x: centerX + r, y: centerY },
+        { x: centerX + r / 2, y: centerY + dy },
+        { x: centerX - r / 2, y: centerY + dy },
+        { x: centerX - r, y: centerY }
+    ];
+    return points;
+}
+
+//creates a hexagon shape for hitmarking 
+function getHexagonPath(shape) {
+    const points = widthHeightToPointObjects(shape.width, shape.height);
+
+    return [
+        `M ${points[0].x},${points[0].y}`,
+        `L ${points[1].x},${points[1].y}`,
+        `L ${points[2].x},${points[2].y}`,
+        `L ${points[3].x},${points[3].y}`,
+        `L ${points[4].x},${points[4].y}`,
+        `L ${points[5].x},${points[5].y}`,
+        'Z'
+    ].join(' ');
+}
 

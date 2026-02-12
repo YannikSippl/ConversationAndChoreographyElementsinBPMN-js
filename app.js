@@ -33,6 +33,21 @@ async function showDiagram() {
     const xml = await getXML();
     const { warnings } = await modeler.importXML(xml);
     console.log('import warnings:', warnings);
+
+    const eventBus = modeler.get('eventBus');
+
+    eventBus.on('element.click', (event) => {
+        const element = event.element;
+        console.log('element.click:', element?.id, element?.type);
+    });
+
+    eventBus.on('selection.changed', (event) => {
+        const selection = event.newSelection || [];
+        console.log(
+            'selection.changed:',
+            selection.map(e => `${e.id} (${e.type})`)
+        );
+    });
 }
 
 showDiagram();
