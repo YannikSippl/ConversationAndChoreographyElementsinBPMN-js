@@ -3,12 +3,11 @@ import BaseRenderer from 'diagram-js/lib/draw/BaseRenderer';
 import {
     append as svgAppend,
     attr as svgAttr,
-    create as svgCreate,
-    remove as svgRemove
+    create as svgCreate
 } from 'tiny-svg';
 
 
-import { is } from 'bpmn-js/lib/features/modeling/util/ModelingUtil';
+import { is } from 'bpmn-js/lib/util/ModelUtil';
 import { getCirclePath } from 'bpmn-js/lib/draw/BpmnRenderUtil';
 
 const HIGH_PRIORITY = 1500;
@@ -20,23 +19,27 @@ export default class ConversationRenderer extends BaseRenderer {
 
         this.bpmnRenderer = bpmnRenderer;
     }
+
+    canRender(element) {
+        const match = is(element, 'conversation:ConversationNode');
+        return match;
+    }
+
     // let base renderer draw the shape and then customize it if it's a ConversationNode
     drawShape(parentNode, element) {
-        const shape = this.bpmnRenderer.drawShape(parentNode, element);
-
         if (is(element, 'conversation:ConversationNode')) {
             const hexagon = drawHexagon(parentNode, element); // new hexagon shape for ConversationNode
-            prependTo(hexagon, parentNode);
-            svgRemove(shape); // remove the default shape drawn by the base renderer
 
-            console.log("Custom Renderer for ConversationNode called"); //testing 
 
-            return shape;
+            return hexagon;
         }
+        //default fallback case 
+        console.log("fallback triggered for" + element);
+        const shape = this.bpmnRenderer.drawShape(parentNode, element);
         return shape;
     }
 
-    // use circle path for ConversationNode borders
+    // use circle path for ConversationNode borders [NEEDS A FIX SO TO MATCH HEXAGON BORDERS]
     getShapePath(shape) {
         if (is(shape, 'conversation:ConversationNode')) {
             return getCirclePath(shape);
@@ -48,6 +51,11 @@ export default class ConversationRenderer extends BaseRenderer {
 ConversationRenderer.$inject = ['eventBus', 'bpmnRenderer'];
 
 
+
+
+// ----- helper functions -----
+
+//creating a hexagon shape for Conversation Nodes
 function drawHexagon(parentNode, element) {
     const hexagon = svgCreate('polygon');
 
@@ -64,8 +72,6 @@ function drawHexagon(parentNode, element) {
     return hexagon;
 };
 
-// ----- helper functions -----
-
 //helper for creating the points for  a hexagon shape
 function widthHeightToPoints(x, y, width, height) {
     const points = [
@@ -78,12 +84,4 @@ function widthHeightToPoints(x, y, width, height) {
     ]
     return points.map(p => `${p.x},${p.y}`).join(' ');
 };
-
-// copied from https://github.com/bpmn-io/diagram-js/blob/master/lib/core/GraphicsFactory.js
-// new Node is behind all other children of parentNode, so it will be drawn first'
-//makes sure the new shape is not drawn on top labels etc. 
-function prependTo(newNode, parentNode, siblingNode) {
-    parentNode.insertBefore(newNode, siblingNode || parentNode.firstChild);
-}
-
 
