@@ -11,13 +11,17 @@
 >
   <bpmn2:process id="Process_1">
     <bpmn2:startEvent id="StartEvent_1"/>
+    <conversation:ConversationNode id="ConvNode_1" name="Test Node" />
   </bpmn2:process>
 
-  <bpmn2:extensionElements>
-    <conversation:ConversationNode id="ConvNode_1" name="Test" participants="A B"/>
-  </bpmn2:extensionElements>
-
   <bpmndi:BPMNDiagram id="Diagram_1">
-    <bpmndi:BPMNPlane id="Plane_1" bpmnElement="Process_1"/>
+    <bpmndi:BPMNPlane id="Plane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="173" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ConvNode_1_di" bpmnElement="ConvNode_1">
+        <dc:Bounds x="320" y="80" width="120" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn2:definitions>
