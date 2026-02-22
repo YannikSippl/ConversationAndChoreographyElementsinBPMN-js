@@ -7,7 +7,7 @@ import {
 } from 'tiny-svg';
 
 
-import { is } from 'bpmn-js/lib/util/ModelUtil';
+import { isAny } from 'bpmn-js/lib/util/ModelUtil';
 
 const HIGH_PRIORITY = 1500;
 
@@ -20,28 +20,44 @@ export default class ConversationRenderer extends BaseRenderer {
     }
 
     canRender(element) {
-        const match = is(element, 'conversation:ConversationNode');
+        const match = isAny(element, ['conversation:ConversationNode', 'conversation:ConversationLink']);
         return match;
     }
 
-    // let base renderer draw the shape and then customize it if it's a ConversationNode
+    // override default shape drawing for ConversationNode and ConversationLink, otherwise fallback to default renderer
     drawShape(parentNode, element) {
-        if (is(element, 'conversation:ConversationNode')) {
+        if (isAny(element, ['conversation:ConversationNode'])) {
             const hexagon = drawHexagon(parentNode, element); // new hexagon shape for ConversationNode
-
-
             return hexagon;
         }
+
+
         //default fallback case 
         console.log("fallback triggered for" + element);
         const shape = this.bpmnRenderer.drawShape(parentNode, element);
         return shape;
     }
 
+    drawConnection(parentNode, element) {
+        console.log("drawing connection for link", element);
+        if (isAny(element, ['conversation:ConversationLink'])) {
+            const path = drawConversationLink(parentNode, element); // new path for ConversationLink
+            return path;
+
+        }
+        return this.bpmnRenderer.drawConnection(parentNode, element);
+    }
+
     // use hexagon path for ConversationNode borders
     getShapePath(shape) {
-        if (is(shape, 'conversation:ConversationNode')) {
+        if (isAny(shape, ['conversation:ConversationNode'])) {
             return getHexagonPath(shape);
+        }
+    }
+
+    getConnectionPath(connection) {
+        if (isAny(connection, ['conversation:ConversationLink'])) {
+            return toConnectionPath(connection.waypoints);
         }
     }
 }
@@ -71,7 +87,60 @@ function drawHexagon(parentNode, element) {
     return hexagon;
 };
 
+//creating a custom path for Conversation Links
+/*function drawConversationLink(parentNode, element) {
+    const path = svgCreate('path');
+    svgAttr(path, {
+        d: toConnectionPath(element.waypoints),
+        stroke: '#ff0101',
+        strokeWidth: 2,
+        strokeLinecap: 'round',
+        strokeLinejoin: 'round',
+        fill: 'none'
+    });
+    svgAppend(parentNode, path);
+    return path;
+
+}*/
+function drawConversationLink(parentNode, element) {
+    const d = toConnectionPath(element.waypoints);
+
+    const base = svgCreate('path');
+    svgAttr(base, {
+        d,
+        fill: 'none',
+        stroke: '#000',
+        strokeWidth: 12,
+        strokeLinecap: 'round',
+        strokeLinejoin: 'round'
+    });
+    svgAppend(parentNode, base);
+
+    const gap = svgCreate('path');
+    svgAttr(gap, {
+        d,
+        fill: 'none',
+        stroke: '#fff', // Canvas-Hintergrundfarbe
+        strokeWidth: 10,
+        strokeLinecap: 'round',
+        strokeLinejoin: 'round'
+    });
+    svgAppend(parentNode, gap);
+
+    return base;
+}
+
+
+function toConnectionPath(waypoints = []) {
+    if (waypoints.length === 0) return '';
+    const [first, ...rest] = waypoints;
+    return `M ${first.x},${first.y} ` + rest.map(p => `L ${p.x},${p.y}`).join(' ');
+}
+
+
+
 //helpers for creating the points for  a hexagon shape
+
 
 //combines both helpers below
 function widthHeightToPoints(width, height) {
@@ -114,4 +183,6 @@ function getHexagonPath(shape) {
         'Z'
     ].join(' ');
 }
+
+
 
