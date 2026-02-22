@@ -20,6 +20,18 @@
             ]
         },
         {
+            "name": "Paricipant",
+            "superClass": [
+                "bpmn:Task"
+            ],
+            "properties": [
+                {
+                    "name": "name",
+                    "type": "String"
+                }
+            ]
+        },
+        {
             "name": "ConversationLink",
             "superClass": [
                 "bpmn:SequenceFlow"
