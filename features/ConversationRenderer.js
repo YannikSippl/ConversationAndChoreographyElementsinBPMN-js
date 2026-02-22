@@ -3,7 +3,8 @@ import BaseRenderer from 'diagram-js/lib/draw/BaseRenderer';
 import {
     append as svgAppend,
     attr as svgAttr,
-    create as svgCreate
+    create as svgCreate,
+    classes as svgClasses
 } from 'tiny-svg';
 
 
@@ -13,10 +14,11 @@ const HIGH_PRIORITY = 1500;
 
 //register CustomRenderer at eventBus with high priority, so it will be used before the default renderer
 export default class ConversationRenderer extends BaseRenderer {
-    constructor(eventBus, bpmnRenderer, canvas, elementRegistry) {
+    constructor(eventBus, bpmnRenderer, canvas, elementRegistry, textRenderer) {
         super(eventBus, HIGH_PRIORITY);
 
         this.bpmnRenderer = bpmnRenderer;
+        this.textRenderer = textRenderer;
 
         // Keep conversation links visually behind conversation nodes.
         const reorderConversationGraphics = () => {
@@ -70,12 +72,12 @@ export default class ConversationRenderer extends BaseRenderer {
     drawShape(parentNode, element) {
         // render ConversationNode as hexagon 
         if (isAny(element, ['conversation:ConversationNode'])) {
-            const hexagon = drawHexagon(parentNode, element); // new hexagon shape for ConversationNode
+            const hexagon = drawHexagon(parentNode, element, this.textRenderer); // new hexagon shape for ConversationNode
             return hexagon;
         }
         // render Participant as rectangle
         if (isAny(element, ['conversation:Participant'])) {
-            const rectangle = drawRectangle(parentNode, element); // new rectangle shape for Participant
+            const rectangle = drawRectangle(parentNode, element, this.textRenderer); // new rectangle shape for Participant
             return rectangle;
         }
 
@@ -108,7 +110,7 @@ export default class ConversationRenderer extends BaseRenderer {
 }
 
 // inject dependencies
-ConversationRenderer.$inject = ['eventBus', 'bpmnRenderer', 'canvas', 'elementRegistry'];
+ConversationRenderer.$inject = ['eventBus', 'bpmnRenderer', 'canvas', 'elementRegistry', 'textRenderer'];
 
 
 
@@ -116,7 +118,7 @@ ConversationRenderer.$inject = ['eventBus', 'bpmnRenderer', 'canvas', 'elementRe
 // ----- helper functions -----
 
 //creating a hexagon shape for Conversation Nodes
-function drawHexagon(parentNode, element) {
+function drawHexagon(parentNode, element, textRenderer) {
     const hexagon = svgCreate('polygon');
 
     const points = widthHeightToPoints(element.width, element.height);
@@ -128,11 +130,12 @@ function drawHexagon(parentNode, element) {
     })
 
     svgAppend(parentNode, hexagon);
+    drawEmbeddedLabel(parentNode, element, textRenderer);
 
     return hexagon;
 };
 //creating a rectangle shape for Participants
-function drawRectangle(parentNode, element) {
+function drawRectangle(parentNode, element, textRenderer) {
     const rectangle = svgCreate('rect');
     svgAttr(rectangle, {
         x: 0,
@@ -144,6 +147,7 @@ function drawRectangle(parentNode, element) {
         strokeWidth: 2
     });
     svgAppend(parentNode, rectangle);
+    drawEmbeddedLabel(parentNode, element, textRenderer);
     return rectangle;
 };
 
@@ -181,6 +185,27 @@ function toConnectionPath(waypoints = []) {
     if (waypoints.length === 0) return '';
     const [first, ...rest] = waypoints;
     return `M ${first.x},${first.y} ` + rest.map(p => `L ${p.x},${p.y}`).join(' ');
+}
+
+function drawEmbeddedLabel(parentNode, element, textRenderer) {
+    const label = element.businessObject?.name || '';
+
+    const text = textRenderer.createText(label, {
+        align: 'center-middle',
+        box: {
+            x: element.x,
+            y: element.y,
+            width: element.width,
+            height: element.height
+        },
+        padding: 7,
+        style: {
+            fill: '#000'
+        }
+    });
+
+    svgClasses(text).add('djs-label');
+    svgAppend(parentNode, text);
 }
 
 
