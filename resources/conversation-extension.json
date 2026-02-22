@@ -24,12 +24,7 @@
             "superClass": [
                 "bpmn:Task"
             ],
-            "properties": [
-                {
-                    "name": "name",
-                    "type": "String"
-                }
-            ]
+            "properties": []
         },
         {
             "name": "ConversationLink",
