@@ -175,28 +175,22 @@ function widthHeightToPoints(width, height) {
 };
 
 // returns 6 hexagon points as an object
-function widthHeightToPointObjects(width, height) {
-    const centerX = width / 2;
-    const centerY = height / 2;
+function widthHeightToPointObjects(width, height, offsetX = 0, offsetY = 0) {
 
-    // Regular flat-top hexagon: width = 2 * r, height = sqrt(3) * r
-    const r = Math.min(width / 2, height / Math.sqrt(3));
-    const dy = (Math.sqrt(3) / 2) * r;
-
-    const points = [
-        { x: centerX - r / 2, y: centerY - dy },
-        { x: centerX + r / 2, y: centerY - dy },
-        { x: centerX + r, y: centerY },
-        { x: centerX + r / 2, y: centerY + dy },
-        { x: centerX - r / 2, y: centerY + dy },
-        { x: centerX - r, y: centerY }
+    return [
+        { x: offsetX + width * 0.25, y: offsetY + 0 },
+        { x: offsetX + width * 0.75, y: offsetY + 0 },
+        { x: offsetX + width, y: offsetY + height / 2 },
+        { x: offsetX + width * 0.75, y: offsetY + height },
+        { x: offsetX + width * 0.25, y: offsetY + height },
+        { x: offsetX + 0, y: offsetY + height / 2 }
     ];
-    return points;
 }
 
 //creates a hexagon shape for hitmarking 
 function getHexagonPath(shape) {
-    const points = widthHeightToPointObjects(shape.width, shape.height);
+    // getShapePath expects absolute coordinates in diagram space.
+    const points = widthHeightToPointObjects(shape.width, shape.height, shape.x, shape.y);
 
     return [
         `M ${points[0].x},${points[0].y}`,
