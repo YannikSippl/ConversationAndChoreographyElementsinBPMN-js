@@ -12,6 +12,8 @@
   <bpmn2:process id="Process_1">
     <bpmn2:startEvent id="StartEvent_1"/>
     <conversation:ConversationNode id="ConvNode_1" name="Test Node" />
+    <conversation:ConversationNode id="ConvNode_2" name="Target Node" />
+    <conversation:ConversationLink id="ConvLink_1" sourceRef="ConvNode_1" targetRef="ConvNode_2" />
   </bpmn2:process>
 
   <bpmndi:BPMNDiagram id="Diagram_1">
@@ -22,6 +24,13 @@
       <bpmndi:BPMNShape id="ConvNode_1_di" bpmnElement="ConvNode_1">
         <dc:Bounds x="320" y="80" width="120" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ConvNode_2_di" bpmnElement="ConvNode_2">
+        <dc:Bounds x="540" y="80" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="ConvLink_1_di" bpmnElement="ConvLink_1">
+        <di:waypoint x="380" y="120" />
+        <di:waypoint x="600" y="120" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn2:definitions>
