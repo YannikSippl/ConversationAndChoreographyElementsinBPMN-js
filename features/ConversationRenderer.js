@@ -13,10 +13,52 @@ const HIGH_PRIORITY = 1500;
 
 //register CustomRenderer at eventBus with high priority, so it will be used before the default renderer
 export default class ConversationRenderer extends BaseRenderer {
-    constructor(eventBus, bpmnRenderer) {
+    constructor(eventBus, bpmnRenderer, canvas, elementRegistry) {
         super(eventBus, HIGH_PRIORITY);
 
         this.bpmnRenderer = bpmnRenderer;
+
+        // Keep conversation links visually behind conversation nodes.
+        const reorderConversationGraphics = () => {
+            const nodes = elementRegistry.filter((el) => isAny(el, ['conversation:ConversationNode']));
+            const links = elementRegistry.filter((el) => isAny(el, ['conversation:ConversationLink']));
+
+            if (!nodes.length || !links.length) {
+                return;
+            }
+
+            const firstNodeGfx = canvas.getGraphics(nodes[0]);
+            if (!firstNodeGfx || !firstNodeGfx.parentNode) {
+                return;
+            }
+
+            links.forEach((link) => {
+                const linkGfx = canvas.getGraphics(link);
+                if (!linkGfx || !linkGfx.parentNode) {
+                    return;
+                }
+
+                // Same SVG group: put connection gfx before node gfx.
+                if (linkGfx.parentNode === firstNodeGfx.parentNode) {
+                    linkGfx.parentNode.insertBefore(linkGfx, firstNodeGfx);
+                    return;
+                }
+
+                // Different groups under same root: move whole connection group before node group.
+                const linkGroup = linkGfx.parentNode;
+                const nodeGroup = firstNodeGfx.parentNode;
+                const root = nodeGroup.parentNode;
+
+                if (root && linkGroup.parentNode === root) {
+                    root.insertBefore(linkGroup, nodeGroup);
+                }
+            });
+        };
+
+        eventBus.on('import.done', 500, reorderConversationGraphics);
+        eventBus.on('connection.added', 500, reorderConversationGraphics);
+        eventBus.on('connection.changed', 500, reorderConversationGraphics);
+        eventBus.on('elements.changed', 500, reorderConversationGraphics);
     }
 
     canRender(element) {
@@ -24,7 +66,7 @@ export default class ConversationRenderer extends BaseRenderer {
         return match;
     }
 
-    // override default shape drawing for ConversationNode and ConversationLink, otherwise fallback to default renderer
+    // override default shape and connection drawing for ConversationNode and ConversationLink, otherwise fallback to default renderer
     drawShape(parentNode, element) {
         if (isAny(element, ['conversation:ConversationNode'])) {
             const hexagon = drawHexagon(parentNode, element); // new hexagon shape for ConversationNode
@@ -32,14 +74,11 @@ export default class ConversationRenderer extends BaseRenderer {
         }
 
 
-        //default fallback case 
-        console.log("fallback triggered for" + element);
         const shape = this.bpmnRenderer.drawShape(parentNode, element);
         return shape;
     }
 
     drawConnection(parentNode, element) {
-        console.log("drawing connection for link", element);
         if (isAny(element, ['conversation:ConversationLink'])) {
             const path = drawConversationLink(parentNode, element); // new path for ConversationLink
             return path;
@@ -54,7 +93,7 @@ export default class ConversationRenderer extends BaseRenderer {
             return getHexagonPath(shape);
         }
     }
-
+    // use custom path for ConversationLink borders
     getConnectionPath(connection) {
         if (isAny(connection, ['conversation:ConversationLink'])) {
             return toConnectionPath(connection.waypoints);
@@ -63,7 +102,7 @@ export default class ConversationRenderer extends BaseRenderer {
 }
 
 // inject dependencies
-ConversationRenderer.$inject = ['eventBus', 'bpmnRenderer'];
+ConversationRenderer.$inject = ['eventBus', 'bpmnRenderer', 'canvas', 'elementRegistry'];
 
 
 
@@ -88,20 +127,6 @@ function drawHexagon(parentNode, element) {
 };
 
 //creating a custom path for Conversation Links
-/*function drawConversationLink(parentNode, element) {
-    const path = svgCreate('path');
-    svgAttr(path, {
-        d: toConnectionPath(element.waypoints),
-        stroke: '#ff0101',
-        strokeWidth: 2,
-        strokeLinecap: 'round',
-        strokeLinejoin: 'round',
-        fill: 'none'
-    });
-    svgAppend(parentNode, path);
-    return path;
-
-}*/
 function drawConversationLink(parentNode, element) {
     const d = toConnectionPath(element.waypoints);
 
