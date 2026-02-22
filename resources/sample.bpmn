@@ -13,6 +13,7 @@
     <bpmn2:startEvent id="StartEvent_1"/>
     <conversation:ConversationNode id="ConvNode_1" name="Test Node" />
     <conversation:ConversationNode id="ConvNode_2" name="Target Node" />
+    <conversation:Participant id="Participant_1" name="Alice" />
     <conversation:ConversationLink id="ConvLink_1" sourceRef="ConvNode_1" targetRef="ConvNode_2" />
   </bpmn2:process>
 
@@ -30,6 +31,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ConvNode_2_di" bpmnElement="ConvNode_2">
         <dc:Bounds x="540" y="80" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_1_di" bpmnElement="Participant_1">
+        <dc:Bounds x="760" y="80" width="120" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
