@@ -146,7 +146,7 @@ function drawConversationLink(parentNode, element) {
         d,
         fill: 'none',
         stroke: '#fff', // Canvas-Hintergrundfarbe
-        strokeWidth: 10,
+        strokeWidth: 9,
         strokeLinecap: 'round',
         strokeLinejoin: 'round'
     });
