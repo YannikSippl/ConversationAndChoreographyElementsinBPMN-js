@@ -62,22 +62,28 @@ export default class ConversationRenderer extends BaseRenderer {
     }
 
     canRender(element) {
-        const match = isAny(element, ['conversation:ConversationNode', 'conversation:ConversationLink']);
+        const match = isAny(element, ['conversation:ConversationNode', 'conversation:ConversationLink', 'conversation:Participant']);
         return match;
     }
 
     // override default shape and connection drawing for ConversationNode and ConversationLink, otherwise fallback to default renderer
     drawShape(parentNode, element) {
+        // render ConversationNode as hexagon 
         if (isAny(element, ['conversation:ConversationNode'])) {
             const hexagon = drawHexagon(parentNode, element); // new hexagon shape for ConversationNode
             return hexagon;
+        }
+        // render Participant as rectangle
+        if (isAny(element, ['conversation:Participant'])) {
+            const rectangle = drawRectangle(parentNode, element); // new rectangle shape for Participant
+            return rectangle;
         }
 
 
         const shape = this.bpmnRenderer.drawShape(parentNode, element);
         return shape;
     }
-
+    // render ConversationLink with custom path, so it can be styled with a thicker stroke and a gap in the middle to create a "dashed" effect
     drawConnection(parentNode, element) {
         if (isAny(element, ['conversation:ConversationLink'])) {
             const path = drawConversationLink(parentNode, element); // new path for ConversationLink
@@ -124,6 +130,21 @@ function drawHexagon(parentNode, element) {
     svgAppend(parentNode, hexagon);
 
     return hexagon;
+};
+//creating a rectangle shape for Participants
+function drawRectangle(parentNode, element) {
+    const rectangle = svgCreate('rect');
+    svgAttr(rectangle, {
+        x: 0,
+        y: 0,
+        width: element.width,
+        height: element.height,
+        fill: '#ff0000',
+        stroke: '#750404',
+        strokeWidth: 2
+    });
+    svgAppend(parentNode, rectangle);
+    return rectangle;
 };
 
 //creating a custom path for Conversation Links
