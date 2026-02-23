@@ -7,7 +7,7 @@ export default class ConversationPalette {
         this.globalConnect = globalConnect;
 
 
-        palette.registerProvider(this);
+        palette.registerProvider(500, this);
     }
 
     getPaletteEntries(element) {
@@ -27,7 +27,7 @@ export default class ConversationPalette {
             globalConnect.start(event);
         }
 
-        return {
+        const customEntries = {
             'create.conversation-node': {
                 group: 'conversation',
                 className: 'bpmn-icon-gateway-none',
@@ -56,6 +56,8 @@ export default class ConversationPalette {
                 }
             }
         };
+
+        return () => customEntries;
     }
 
 
