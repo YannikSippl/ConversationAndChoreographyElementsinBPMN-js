@@ -7,9 +7,17 @@
     },
     "types": [
         {
-            "name": "ConversationNode",
+            "name": "ConversationEndpoint",
+            "isAbstract": true,
             "superClass": [
                 "bpmn:Task"
+            ],
+            "properties": []
+        },
+        {
+            "name": "ConversationNode",
+            "superClass": [
+                "ConversationEndpoint"
             ],
             "properties": [
                 {
@@ -22,7 +30,7 @@
         {
             "name": "Participant",
             "superClass": [
-                "bpmn:Task"
+                "ConversationEndpoint"
             ],
             "properties": []
         },
@@ -34,11 +42,11 @@
             "properties": [
                 {
                     "name": "source",
-                    "type": "ConversationNode"
+                    "type": "ConversationEndpoint"
                 },
                 {
                     "name": "target",
-                    "type": "ConversationNode"
+                    "type": "ConversationEndpoint"
                 }
             ]
         }
