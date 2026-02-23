@@ -12,9 +12,8 @@ Dieses Projekt ist ein erster Versuch, die **bpmn-js** Bibliothek zu erweitern, 
 
 ✅ Checkliste für neue Elemente
 - [x] Meta-Model definiert (JSON)
-- [ ] Renderer erstellt (wie sieht es aus?)
-- [ ] Factory erstellt (wie wird es erzeugt?)
-- [ ] Rules definiert (wo darf es platziert werden?)
-- [ ] Palette/Context Pad (wie greift der User drauf zu?)
-- [ ] Im Modeler registriert (moddleExtensions + additionalModules)
+- [x] Renderer erstellt (wie sieht es aus?)
+- [x] Rules definiert (wo darf es platziert werden?)
+- [x] Palette/Context Pad (wie greift der User drauf zu?)
+- [x] Im Modeler registriert (moddleExtensions + additionalModules)
 - [ ] Properties Panel (optional, aber empfohlen für Usability)
