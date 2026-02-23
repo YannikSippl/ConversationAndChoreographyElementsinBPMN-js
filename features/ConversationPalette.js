@@ -10,7 +10,7 @@ export default class ConversationPalette {
         palette.registerProvider(500, this);
     }
 
-    getPaletteEntries(element) {
+    getPaletteEntries() {
         const { create, elementFactory, translate, globalConnect } = this;
 
         function createConversationNode(event) {
@@ -57,7 +57,7 @@ export default class ConversationPalette {
             }
         };
 
-        return () => customEntries;
+        return customEntries;
     }
 
 
