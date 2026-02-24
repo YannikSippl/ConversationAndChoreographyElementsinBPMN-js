@@ -6,6 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            padding: 1rem;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .toolbar button {
+            padding: 0.5rem 0.8rem;
+            cursor: pointer;
+        }
+
+        #status {
+            font-size: 0.9rem;
+        }
+
         #diagram {
             height: 600px;
             width: 100%;
@@ -19,6 +45,12 @@
         <h1>Welcome to Home</h1>
     </header>
     <main>
+        <div class="toolbar">
+            <button id="saveXmlButton" type="button">XML speichern</button>
+            <button id="loadXmlButton" type="button">XML laden</button>
+            <input id="loadXmlInput" type="file" accept=".bpmn,.xml" hidden />
+            <span id="status"></span>
+        </div>
         <div id="diagram"></div>
     </main>
     <script type="module" src="app.js"></script>
