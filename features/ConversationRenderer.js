@@ -1,14 +1,13 @@
 import BaseRenderer from 'diagram-js/lib/draw/BaseRenderer';
-
 import {
     append as svgAppend,
     attr as svgAttr,
     create as svgCreate,
     classes as svgClasses
 } from 'tiny-svg';
-
-
 import { isAny } from 'bpmn-js/lib/util/ModelUtil';
+import {getRectPath} from 'bpmn-js/lib/draw/BpmnRenderUtil.js';
+
 
 const HIGH_PRIORITY = 1500;
 
@@ -100,6 +99,9 @@ export default class ConversationRenderer extends BaseRenderer {
         if (isAny(shape, ['conversation:ConversationNode'])) {
             return getHexagonPath(shape);
         }
+        if (isAny(shape, ['conversation:Participant'])) {
+            return getRectPath(shape);
+        }
     }
     // use custom path for ConversationLink borders
     getConnectionPath(connection) {
@@ -153,7 +155,7 @@ function drawRectangle(parentNode, element, textRenderer) {
         x1: 0,
         x2: element.width,
         y1: element.height / 3,
-        y2: element.height /3,
+        y2: element.height / 3,
         stroke: '#750404',
         strokeWidth: 2
     });
