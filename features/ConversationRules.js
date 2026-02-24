@@ -7,6 +7,17 @@ export default class ConversationRules extends rulesProvider {
     }
 
     init() {
+
+        //Conversation Nodes and Participants rules to allow resizing 
+        this.addRule('shape.resize', 1500, (context) => {
+            const shape = context.shape;
+            if (isAny(shape, ['conversation:ConversationNode', 'conversation:Participant'])) {
+                return true; // allow resizing
+            }
+            return;
+
+        });
+        // Conversation Links rules 
         this.addRule('connection.create', 1500, (context) => {
             const { source, target } = context;
 
@@ -17,7 +28,7 @@ export default class ConversationRules extends rulesProvider {
                 return { type: 'conversation:ConversationLink' };
             }
             return;
-        })
+        });
 
         this.addRule('connection.reconnect', 1500, (context) => {
             const { connection, source, target } = context;
@@ -30,9 +41,7 @@ export default class ConversationRules extends rulesProvider {
                 return { type: 'conversation:ConversationLink' };
             }
             return false;
-        })
-
-
+        });
     }
 }
 
