@@ -130,13 +130,14 @@ function drawHexagon(parentNode, element, textRenderer) {
     })
 
     svgAppend(parentNode, hexagon);
-    drawEmbeddedLabel(parentNode, element, textRenderer);
+    drawEmbeddedLabel(parentNode, element, textRenderer, 0);
 
     return hexagon;
 };
 //creating a rectangle shape for Participants
 function drawRectangle(parentNode, element, textRenderer) {
     const rectangle = svgCreate('rect');
+    const seperator = svgCreate('line');
     svgAttr(rectangle, {
         x: 0,
         y: 0,
@@ -147,7 +148,19 @@ function drawRectangle(parentNode, element, textRenderer) {
         strokeWidth: 2
     });
     svgAppend(parentNode, rectangle);
-    drawEmbeddedLabel(parentNode, element, textRenderer);
+
+    svgAttr(seperator, {
+        x1: 0,
+        x2: element.width,
+        y1: element.height / 3,
+        y2: element.height /3,
+        stroke: '#750404',
+        strokeWidth: 2
+    });
+    svgAppend(parentNode, seperator);
+
+
+    drawEmbeddedLabel(parentNode, element, textRenderer, -0.65);
     return rectangle;
 };
 
@@ -187,7 +200,7 @@ function toConnectionPath(waypoints = []) {
     return `M ${first.x},${first.y} ` + rest.map(p => `L ${p.x},${p.y}`).join(' ');
 }
 
-function drawEmbeddedLabel(parentNode, element, textRenderer) {
+function drawEmbeddedLabel(parentNode, element, textRenderer, offset) {
     const label = element.businessObject?.name || '';
 
     const text = textRenderer.createText(label, {
@@ -196,7 +209,7 @@ function drawEmbeddedLabel(parentNode, element, textRenderer) {
             x: element.x,
             y: element.y,
             width: element.width,
-            height: element.height
+            height: element.height + (offset * element.height) // adjust height for label position
         },
         padding: 7,
         style: {
