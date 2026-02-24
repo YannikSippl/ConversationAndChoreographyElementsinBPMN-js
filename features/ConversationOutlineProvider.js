@@ -50,6 +50,8 @@ ConversationOutlineProvider.prototype.updateOutline = function(element, outline)
   return false;
 };
 
+
+// helper function to calculate hexagon points for Conversation Nodes
 function getHexPoints(width, height, o = 0) {
   return [
     `${width * 0.25 - o},${-o}`,
