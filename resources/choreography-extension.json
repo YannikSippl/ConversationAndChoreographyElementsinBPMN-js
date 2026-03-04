@@ -7,27 +7,28 @@
     },
     "types": [
         {
-            "name": "Initiator",
-            "superClass": [
-                "bpmn:Participant"
+            "name": "ProcessParticipants",
+            "extends": [
+                "bpmn:Process"
             ],
             "properties": [
                 {
-                    "name": "initiatorRef",
-                    "type": "String"
+                    "name": "participants",
+                    "type": "bpmn:Participant",
+                    "isMany": true
                 }
+            ]
+        },
+        {
+            "name": "Initiator",
+            "superClass": [
+                "bpmn:Participant"
             ]
         },
         {
             "name": "NonInitiator",
             "superClass": [
                 "bpmn:Participant"
-            ],
-            "properties": [
-                {
-                    "name": "nonInitiatorRef",
-                    "type": "String"
-                }
             ]
         },
         {
@@ -38,12 +39,15 @@
             "properties": [
                 {
                     "name": "initiatingParticipantRef",
-                    "type": "Initiator"
+                    "type": "Initiator",
+                    "isAttr": true,
+                    "isReference": true
                 },
                 {
                     "name": "participantRef",
                     "type": "NonInitiator",
-                    "isMany": true
+                    "isMany": true,
+                    "isReference": true
                 }
             ]
         }
