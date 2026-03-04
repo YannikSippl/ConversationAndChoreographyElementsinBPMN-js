@@ -2,6 +2,8 @@ import BpmnJS from 'bpmn-js/lib/Modeler';
 import conversationModdle from './resources/conversation-extension.json';
 import ConversationModule from './features';
 
+import choreographyModdle from './resources/choreography-extension.json';
+
 //needed for modeler ui
 import 'bpmn-js/dist/assets/diagram-js.css';
 import 'bpmn-js/dist/assets/bpmn-js.css';
@@ -13,9 +15,12 @@ var modeler = new BpmnJS({
     container: '#diagram',
     additionalModules: [
         ConversationModule //add conversation renderer to the modeler
+
+
     ],
     moddleExtensions: {
-        conversation: conversationModdle //add conversation extension to the modeler
+        conversation: conversationModdle, //add conversation extension to the modeler
+        choreography: choreographyModdle //add choreography extension to the modeler
     }
 });
 

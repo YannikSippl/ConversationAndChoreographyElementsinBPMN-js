@@ -1,0 +1,51 @@
+{
+    "name": "ChoreographyExtension",
+    "uri": "http://example.com/choreography",
+    "prefix": "choreography",
+    "xml": {
+        "tagAlias": "lowerCase"
+    },
+    "types": [
+        {
+            "name": "Initiator",
+            "superClass": [
+                "bpmn:Participant"
+            ],
+            "properties": [
+                {
+                    "name": "initiatorRef",
+                    "type": "String"
+                }
+            ]
+        },
+        {
+            "name": "NonInitiator",
+            "superClass": [
+                "bpmn:Participant"
+            ],
+            "properties": [
+                {
+                    "name": "nonInitiatorRef",
+                    "type": "String"
+                }
+            ]
+        },
+        {
+            "name": "ChoreographyTask",
+            "superClass": [
+                "bpmn:Task"
+            ],
+            "properties": [
+                {
+                    "name": "initiatingParticipantRef",
+                    "type": "Initiator"
+                },
+                {
+                    "name": "participantRef",
+                    "type": "NonInitiator",
+                    "isMany": true
+                }
+            ]
+        }
+    ]
+}
