@@ -7,7 +7,7 @@ import {
     off
 } from 'tiny-svg';
 import { isAny } from 'bpmn-js/lib/util/ModelUtil';
-import { getRoundRectPath } from 'bpmn-js/lib/draw/BpmnRenderUtil.js';
+import { getRectPath, getRoundRectPath } from 'bpmn-js/lib/draw/BpmnRenderUtil.js';
 
 
 const HIGH_PRIORITY = 1500;
@@ -40,14 +40,28 @@ export default class ChoreographyRenderer extends BaseRenderer {
         }
 
         if (isAny(element, ['choreography:InitiatorMessage', 'choreography:ResponseMessage'])) {
-            const message = drawMessage(parentNode, element, this.textRenderer);
-            return message;
+            if(isAny(element, ['choreography:InitiatorMessage'])){
+                const message = drawMessage(parentNode, element, this.textRenderer, '#a1abff');
+                return message;
+            }
+            if(isAny(element, ['choreography:ResponseMessage'])){
+                const message = drawMessage(parentNode, element, this.textRenderer, '#b3b3b3');
+                return message;
+            }
         }
     }
 
 
     getShapePath(shape) {
-        return getRoundRectPath(shape);
+        if (isAny(shape, ['choreography:ChoreographyTask'])) {
+            return getRoundRectPath(shape, 5);
+        }
+
+        if (isAny(shape, ['choreography:InitiatorMessage', 'choreography:ResponseMessage'])) {
+            return getRectPath(shape);
+        }
+
+        return getRectPath(shape);
     }
 
 
@@ -61,12 +75,12 @@ ChoreographyRenderer.$inject = ['eventBus', 'bpmnRenderer', 'canvas', 'elementRe
 
 // ----- helper functions -----
 
-function drawMessage(parentNode, element,textRenderer) {
+function drawMessage(parentNode, element,textRenderer, color ) {
     const rectangle = svgCreate('rect');
     svgAttr(rectangle, {
         width: element.width,
         height: element.height,
-        fill: '#84ff00',
+        fill: color,
         stroke: '#000000',
         strokeWidth: 2
     });
@@ -213,7 +227,6 @@ function drawNonInitiators(parentNode, element, textRenderer, offset){
     
 
 }
-
 
 
 
