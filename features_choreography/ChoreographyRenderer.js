@@ -55,8 +55,8 @@ ChoreographyRenderer.$inject = ['eventBus', 'bpmnRenderer', 'canvas', 'elementRe
 
 //creating a rectangle shape for Participants
 function drawChoreography(parentNode, element, textRenderer, offset) {
-    drawInitiator(parentNode, element, textRenderer, offset); //initiator label
-    drawNonInitiators(parentNode, element, textRenderer, offset); //non-initiator label
+    drawInitiator(parentNode, element, textRenderer, offset); 
+    drawNonInitiators(parentNode, element, textRenderer, offset); 
 
     const rectangle = svgCreate('rect');
     const size = element.height * 0.4;
@@ -72,8 +72,22 @@ function drawChoreography(parentNode, element, textRenderer, offset) {
     svgAppend(parentNode, rectangle);
 
     drawEmbeddedLabel(parentNode, element, textRenderer, 0 );
+
+    const outline = svgCreate('rect');
+    svgAttr(outline, {
+        x: 0,
+        y: 0,
+        rx: 5,
+        ry: 5,
+        width: element.width,
+        height: element.height,
+        fill: 'none',
+        stroke: '#000000',
+        strokeWidth: 2
+    });
+    svgAppend(parentNode, outline);
     
-    return rectangle;
+    return outline;
 };
 
 
@@ -173,6 +187,8 @@ function drawNonInitiators(parentNode, element, textRenderer, offset){
     });
     svgClasses(text).add('djs-label');
     svgAppend(parentNode, text);
+
+    
 
 }
 
