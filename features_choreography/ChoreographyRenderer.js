@@ -24,17 +24,24 @@ export default class ChoreographyRenderer extends BaseRenderer {
     }
 
     canRender(element) {
-        const match = isAny(element, ['choreography:ChoreographyTask', 'choreography:Initiator', 'choreography:NonInitiator']);
+        if (element.labelTarget) {
+            return false;
+        }
+
+        const match = isAny(element, ['choreography:ChoreographyTask', 'choreography:InitiatorMessage', 'choreography:ResponseMessage']);
         return match;
     }
 
     drawShape(parentNode, element) {
         if (isAny(element, ['choreography:ChoreographyTask'])) {
-         
-
             const rectangle = drawChoreography(parentNode, element, this.textRenderer, 0.3);
             return rectangle;
 
+        }
+
+        if (isAny(element, ['choreography:InitiatorMessage', 'choreography:ResponseMessage'])) {
+            const message = drawMessage(parentNode, element, this.textRenderer);
+            return message;
         }
     }
 
@@ -42,6 +49,7 @@ export default class ChoreographyRenderer extends BaseRenderer {
     getShapePath(shape) {
         return getRoundRectPath(shape);
     }
+
 
 }
 
@@ -53,7 +61,21 @@ ChoreographyRenderer.$inject = ['eventBus', 'bpmnRenderer', 'canvas', 'elementRe
 
 // ----- helper functions -----
 
-//creating a rectangle shape for Participants
+function drawMessage(parentNode, element,textRenderer) {
+    const rectangle = svgCreate('rect');
+    svgAttr(rectangle, {
+        width: element.width,
+        height: element.height,
+        fill: '#84ff00',
+        stroke: '#000000',
+        strokeWidth: 2
+    });
+    svgAppend(parentNode, rectangle);
+    //drawEmbeddedLabel(parentNode, element, textRenderer, 0);
+    return rectangle;
+    
+}
+//creating a rectangle shape for the choreography task, which includes the initiator and non-initiator participants, as well as the embedded label
 function drawChoreography(parentNode, element, textRenderer, offset) {
     drawInitiator(parentNode, element, textRenderer, offset); 
     drawNonInitiators(parentNode, element, textRenderer, offset); 
@@ -191,8 +213,6 @@ function drawNonInitiators(parentNode, element, textRenderer, offset){
     
 
 }
-
-
 
 
 

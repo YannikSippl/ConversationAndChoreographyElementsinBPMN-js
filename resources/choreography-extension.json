@@ -20,16 +20,56 @@
             ]
         },
         {
-            "name": "Initiator",
-            "superClass": [
-                "bpmn:Participant"
+            "name": "ChoreographyMessage",
+            "isAbstract": true,
+            "superClass":[
+                "bpmn:DataStoreReference"
+            ],
+            "properties": [
+                {
+                    "name": "participantRef",
+                    "type": "ChoreographyParticipant",
+                    "isAttr": true,
+                    "isReference": true
+                }
             ]
         },
         {
-            "name": "NonInitiator",
+            "name": "InitiatorMessage",
+            "superClass": [
+                "ChoreographyMessage"
+            ],
+            "properties": []
+        },
+        {
+            "name": "ResponseMessage",
+            "superClass": [
+                "ChoreographyMessage"
+            ],
+            "properties": []
+        },
+        {
+            "name": "ChoreographyParticipant",
+            "isAbstract": true,
             "superClass": [
                 "bpmn:Participant"
+            ],
+            "properties": [
             ]
+        },
+        {
+            "name": "Initiator",
+            "superClass": [
+                "ChoreographyParticipant"
+            ],
+            "properties": []
+        },
+        {
+            "name": "Responder",
+            "superClass": [
+                "ChoreographyParticipant"
+            ],
+            "properties": []
         },
         {
             "name": "ChoreographyTask",
@@ -39,13 +79,13 @@
             "properties": [
                 {
                     "name": "initiatingParticipantRef",
-                    "type": "Initiator",
+                    "type": "ChoreographyParticipant",
                     "isAttr": true,
                     "isReference": true
                 },
                 {
                     "name": "participantRef",
-                    "type": "NonInitiator",
+                    "type": "ChoreographyParticipant",
                     "isMany": true,
                     "isReference": true
                 }
