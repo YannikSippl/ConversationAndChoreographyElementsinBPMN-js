@@ -1,9 +1,12 @@
 import ChoreographyRenderer from "./ChoreographyRenderer";
+import ChoreographyRules from "./ChoreographyRules";
 
 
 export default {
     __init__: [
-        'choreographyRenderer'
+        'choreographyRenderer',
+        'choreographyRules'
     ],
-    choreographyRenderer: ['type', ChoreographyRenderer]
+    choreographyRenderer: ['type', ChoreographyRenderer],
+    choreographyRules: ['type', ChoreographyRules]
 }
