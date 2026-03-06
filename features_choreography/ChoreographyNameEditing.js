@@ -3,8 +3,9 @@ import { getOriginal, toPoint } from 'diagram-js/lib/util/Event';
 
 const HIGH_PRIORITY = 3000;
 const TASK_TYPES = [ 'choreography:ChoreographyTask' ];
+const REMOVABLE_PARENT_COLLECTIONS = [ 'participants', 'flowElements', 'artifacts', 'rootElements' ];
 
-export default function ChoreographyNameEditing(eventBus, modeling, canvas) {
+export default function ChoreographyNameEditing(eventBus, modeling, canvas, elementRegistry) {
     eventBus.on('element.dblclick', HIGH_PRIORITY, function(event) {
         const element = event.element;
 
@@ -71,8 +72,16 @@ export default function ChoreographyNameEditing(eventBus, modeling, canvas) {
                 return false;
             }
 
+            const trimmedName = nextName.trim();
+
+            if (!trimmedName) {
+                removeResponderReference(element, responder, modeling);
+                removeResponderIfOrphan(element, responder, modeling, elementRegistry);
+                return false;
+            }
+
             modeling.updateModdleProperties(element, responder, {
-                name: nextName.trim()
+                name: trimmedName
             });
 
             return false;
@@ -80,7 +89,7 @@ export default function ChoreographyNameEditing(eventBus, modeling, canvas) {
     });
 }
 
-ChoreographyNameEditing.$inject = [ 'eventBus', 'modeling', 'canvas' ];
+ChoreographyNameEditing.$inject = [ 'eventBus', 'modeling', 'canvas', 'elementRegistry' ];
 
 function getDiagramPosition(event, canvas) {
     const originalEvent = getOriginal(event);
@@ -97,4 +106,51 @@ function getDiagramPosition(event, canvas) {
         x: viewbox.x + (point.x - containerRect.left) / viewbox.scale,
         y: viewbox.y + (point.y - containerRect.top) / viewbox.scale
     };
+}
+
+function removeResponderReference(element, responder, modeling) {
+    const task = element.businessObject;
+    const participantRefs = task?.participantRef || [];
+    const updatedParticipantRefs = participantRefs.filter((ref) => ref !== responder);
+
+    modeling.updateModdleProperties(element, task, {
+        participantRef: updatedParticipantRefs
+    });
+}
+
+function removeResponderIfOrphan(element, responder, modeling, elementRegistry) {
+    if (isStillReferenced(responder, elementRegistry)) {
+        return;
+    }
+
+    const parent = responder.$parent;
+
+    if (!parent) {
+        return;
+    }
+
+    for (const property of REMOVABLE_PARENT_COLLECTIONS) {
+        const collection = parent[property];
+
+        if (!Array.isArray(collection) || !collection.includes(responder)) {
+            continue;
+        }
+
+        modeling.updateModdleProperties(element, parent, {
+            [property]: collection.filter((item) => item !== responder)
+        });
+
+        return;
+    }
+}
+
+function isStillReferenced(responder, elementRegistry) {
+    const tasks = elementRegistry.filter((element) => isAny(element, TASK_TYPES));
+
+    return tasks.some((taskElement) => {
+        const businessObject = taskElement.businessObject;
+        const responders = businessObject?.participantRef || [];
+
+        return businessObject?.initiatingParticipantRef === responder || responders.includes(responder);
+    });
 }
