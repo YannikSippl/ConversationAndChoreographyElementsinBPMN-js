@@ -122,26 +122,13 @@ function drawMessage(parentNode, element,textRenderer, color ) {
     return rectangle;
     
 }
-//creating a rectangle shape for the choreography task, which includes the initiator and non-initiator participants, as well as the embedded label
+//creating a rectangle shape for the choreography task, which includes the initiator and responder participants
 function drawChoreography(parentNode, element, textRenderer, offset) {
-    drawInitiator(parentNode, element, textRenderer, offset); 
-    drawNonInitiators(parentNode, element, textRenderer, offset); 
-
-    const rectangle = svgCreate('rect');
-    const size = element.height * 0.4;
-    svgAttr(rectangle, {
-        x: 0,
-        y: element.height/2 - size/2,
-        width: element.width,
-        height: size,
-        fill: '#a1abff',
-        stroke: '#000000',
-        strokeWidth: 2
-    });
-    svgAppend(parentNode, rectangle);
-
-    drawEmbeddedLabel(parentNode, element, textRenderer, 0 );
-
+  
+    drawMiddlePart(parentNode, element, textRenderer);
+    drawInitiator(parentNode, element, textRenderer);
+    drawResponder(parentNode, element, textRenderer);
+    
     const outline = svgCreate('rect');
     svgAttr(outline, {
         x: 0,
@@ -155,110 +142,135 @@ function drawChoreography(parentNode, element, textRenderer, offset) {
         strokeWidth: 2
     });
     svgAppend(parentNode, outline);
+
     
     return outline;
 };
 
 
 
+function drawMiddlePart(parentNode, element, textRenderer){
+    const middleRectangle = svgCreate('rect');
 
-
-function drawEmbeddedLabel(parentNode, element, textRenderer, offset) {
-    const label = element.businessObject?.name || '';
-
-    const text = textRenderer.createText(label, {
-        align: 'center-middle',
-        box: {
-            x: element.x,
-            y: element.y,
-            width: element.width,
-            height: element.height + (offset * element.height) // adjust height for label position
-        },
-        padding: 7,
-        style: {
-            fill: '#000'
-        }
-    });
-    svgClasses(text).add('djs-label');
-    svgAppend(parentNode, text);
-
-    
-}
-
-function drawInitiator(parentNode, element, textRenderer,offset, color){
-    const initiator_label = element.businessObject?.initiatingParticipantRef?.name || 'Initiator';
-
-    const size = element.height * 0.3;
-    const text = textRenderer.createText(initiator_label,{
-        align: 'center-middle',
-        box: {
-            x: element.x,
-            y: element.y,
-            width: element.width,
-            height: size
-        },
-        padding: 7,
-        style: {
-            fill: '#000'
-        }
-    });
-    const rectangle = svgCreate('rect');
-    svgAttr(rectangle, {
+    const middleHeight = element.height/3;
+    const middleY = element.height/2 - middleHeight/2;
+    svgAttr(middleRectangle, {
         x: 0,
-        y: 0,
-        rx: 5,
-        ry: 5,
+        y: middleY,
         width: element.width,
-        height: element.height / 3,
-        fill: color || '#a1abff',
-        stroke: '#000',
-        strokeWidth: 2
-    });
-    svgAppend(parentNode, rectangle);
-
-    svgClasses(text).add('djs-label');
-    svgAppend(parentNode, text);
-
-}
-
-function drawNonInitiators(parentNode, element, textRenderer, offset, color){
-    const nonInitiators = element.businessObject?.participantRef || [];
-    
-    const rectangle = svgCreate('rect');
-    const size = element.height * 0.4;
-    svgAttr(rectangle, {
-        x: 0,
-        y: element.height -  (element.height * 0.4),
-        rx:5,
-        ry:5,
-        width: element.width,
-        height: size,
-        fill: color || '#b3b3b3',
+        height: middleHeight,
+        fill: '#a1abff',
         stroke: '#000000',
         strokeWidth: 2
     });
-    svgAppend(parentNode, rectangle);
+    svgAppend(parentNode, middleRectangle);
 
-    const nonInitiator = nonInitiators[0]?.name;
-
-    const text = textRenderer.createText(nonInitiator,{
+    //draw label in the middle rectangle
+    const label = element.businessObject?.name || '';
+    console.log('Label for choreography task:', label);
+    const text = textRenderer.createText(label, {
         align: 'center-middle',
         box: {
-            x: element.x,
-            y: element.y, 
             width: element.width,
-            height: element.height * offset * 5.5
+            height: middleHeight
         },
         padding: 7,
         style: {
             fill: '#000'
         }
     });
+    svgAttr(text, {transform: `translate(0, ${middleY})`}); // position text in the middle rectangle    
     svgClasses(text).add('djs-label');
     svgAppend(parentNode, text);
 
-    
+    return middleRectangle;
+}
 
+function drawInitiator(parentNode, element, textRenderer){
+    const initiator_label = element.businessObject?.initiatingParticipantRef?.name || 'Initiator';
+
+    const initiatorRectangle = svgCreate('rect');
+    svgAttr(initiatorRectangle, {
+        x: 0,
+        y: 0,
+        width: element.width,
+        height: element.height /3,
+        fill: '#a1abff',
+        stroke: '#000000',
+        strokeWidth: 0
+    });
+    svgAppend(parentNode, initiatorRectangle);
+
+    //draw label in the initiator rectangle
+    const text = textRenderer.createText(initiator_label, {
+        align: 'center-middle',
+        box: {
+            width: element.width,
+            height: element.height /3
+        },
+        padding: 7,
+        style: {
+            fill: '#000'
+        }
+    });
+    svgAppend(parentNode, text);
+    svgClasses(text).add('djs-label');
+
+    return initiatorRectangle;
+}
+
+function drawResponder(parentNode, element, textRenderer){
+    const nonInitiators = element.businessObject?.participantRef || [];
+    const responderRectangle = svgCreate('rect');
+    const bottomY = element.height/2 + (element.height/6);
+    const height = element.height/3;
+    svgAttr(responderRectangle, {
+        x: 0,
+        y: bottomY,
+        width: element.width,
+        height: height,
+        fill: '#b3b3b3',
+        stroke: '#000000',
+        strokeWidth: 0
+    });
+    svgAppend(parentNode, responderRectangle);
+
+    //for each non-initiator participant, draw a seperator line and label
+    const countResponders = nonInitiators.length ;
+    console.log('Count of responders:', countResponders);
+    const rowHeight = height / countResponders;
+    for(let i = 0; i < nonInitiators.length; i++){
+        let seperator = svgCreate('line');
+        const seperatorY = bottomY + (i+1) * rowHeight;
+        svgAttr(seperator, {
+            x1: 0,
+            y1: seperatorY,
+            x2: element.width,
+            y2: seperatorY,
+            stroke: '#000000',
+            strokeWidth: 1
+        });
+        svgAppend(parentNode, seperator);
+
+        const responder_label = nonInitiators[i]?.name || `Responder ${i+1}`;
+        const text = textRenderer.createText(responder_label, {
+            align: 'center-middle',
+            box: {
+                width: element.width,
+                height: rowHeight
+            },
+            padding: 7,
+            style: {
+                fill: '#000'
+            }
+        });
+        svgAttr(text, {transform: `translate(0, ${bottomY + i*rowHeight})`}); // position text in the correct row    
+        svgClasses(text).add('djs-label');
+        svgAppend(parentNode, text);
+    }
+    const nonInitiator = nonInitiators[0]?.name;
+
+    return responderRectangle;
 }
 
 
