@@ -85,6 +85,39 @@ function drawMessage(parentNode, element,textRenderer, color ) {
         strokeWidth: 2
     });
     svgAppend(parentNode, rectangle);
+    
+    const seperator1 = svgCreate('line');
+    svgAttr(seperator1, {
+        x1: 0,
+        y1: element.height / 2,
+        x2: element.width,
+        y2: element.height / 2,
+        stroke: '#000000',
+        strokeWidth: 2
+    });
+    svgAppend(parentNode, seperator1);
+
+    const seperator2 = svgCreate('line');
+    svgAttr(seperator2, {
+        x1: element.width ,
+        y1: 0,
+        x2: element.width / 2,
+        y2: element.height/2,
+        stroke: '#000000',
+        strokeWidth: 2
+    });
+    svgAppend(parentNode, seperator2);
+
+    const seperator3 = svgCreate('line');
+    svgAttr(seperator3, {
+        x1: 0,
+        y1: 0,
+        x2: element.width / 2,
+        y2: element.height/2,
+        stroke: '#000000',
+        strokeWidth: 2
+    });
+    svgAppend(parentNode, seperator3);
     //drawEmbeddedLabel(parentNode, element, textRenderer, 0);
     return rectangle;
     
@@ -152,7 +185,7 @@ function drawEmbeddedLabel(parentNode, element, textRenderer, offset) {
     
 }
 
-function drawInitiator(parentNode, element, textRenderer,offset){
+function drawInitiator(parentNode, element, textRenderer,offset, color){
     const initiator_label = element.businessObject?.initiatingParticipantRef?.name || 'Initiator';
 
     const size = element.height * 0.3;
@@ -177,7 +210,7 @@ function drawInitiator(parentNode, element, textRenderer,offset){
         ry: 5,
         width: element.width,
         height: element.height / 3,
-        fill: '#a1abff',
+        fill: color || '#a1abff',
         stroke: '#000',
         strokeWidth: 2
     });
@@ -188,7 +221,7 @@ function drawInitiator(parentNode, element, textRenderer,offset){
 
 }
 
-function drawNonInitiators(parentNode, element, textRenderer, offset){
+function drawNonInitiators(parentNode, element, textRenderer, offset, color){
     const nonInitiators = element.businessObject?.participantRef || [];
     
     const rectangle = svgCreate('rect');
@@ -200,7 +233,7 @@ function drawNonInitiators(parentNode, element, textRenderer, offset){
         ry:5,
         width: element.width,
         height: size,
-        fill: '#b3b3b3',
+        fill: color || '#b3b3b3',
         stroke: '#000000',
         strokeWidth: 2
     });
