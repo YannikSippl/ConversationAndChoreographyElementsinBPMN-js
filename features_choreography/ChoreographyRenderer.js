@@ -14,7 +14,7 @@ const HIGH_PRIORITY = 1500;
 
 //register CustomRenderer at eventBus with high priority, so it will be used before the default renderer
 export default class ChoreographyRenderer extends BaseRenderer {
-    constructor(eventBus, bpmnRenderer, canvas, elementRegistry, textRenderer) {
+    constructor(eventBus, bpmnRenderer, textRenderer) {
         super(eventBus, HIGH_PRIORITY);
 
         this.bpmnRenderer = bpmnRenderer;
@@ -68,7 +68,7 @@ export default class ChoreographyRenderer extends BaseRenderer {
 }
 
 // inject dependencies
-ChoreographyRenderer.$inject = ['eventBus', 'bpmnRenderer', 'canvas', 'elementRegistry', 'textRenderer'];
+ChoreographyRenderer.$inject = ['eventBus', 'bpmnRenderer', 'textRenderer'];
 
 
 
@@ -118,7 +118,6 @@ function drawMessage(parentNode, element,textRenderer, color ) {
         strokeWidth: 2
     });
     svgAppend(parentNode, seperator3);
-    //drawEmbeddedLabel(parentNode, element, textRenderer, 0);
     return rectangle;
     
 }
@@ -268,7 +267,7 @@ function drawResponder(parentNode, element, textRenderer){
         svgClasses(text).add('djs-label');
         svgAppend(parentNode, text);
     }
-    const nonInitiator = nonInitiators[0]?.name;
+    
 
     return responderRectangle;
 }
