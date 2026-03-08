@@ -43,7 +43,7 @@ export default class ChoreographyContextPad {
         return {
             'append.responder': {
                 group: 'model',
-                className: 'bpmn-icon-participant',
+                className: 'bpmn-icon-lane-insert-below',
                 title: translate('Append Responder'),
                 action: {
                     click: addResponder
