@@ -1,10 +1,17 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
 export default class ChoreographyContextPad {
-    constructor(contextPad, bpmnFactory, modeling, translate) {
+    constructor(config, contextPad, bpmnFactory, modeling, translate, injector, elementFactory, create) {
         this.bpmnFactory = bpmnFactory;
         this.modeling = modeling;
         this.translate = translate;
+        this.elementFactory = elementFactory;
+        this.create = create;
+        this.autoPlace = null;
+
+        if (config.autoPlace !== false) {
+            this.autoPlace = injector.get('autoPlace', false);
+        }
 
         contextPad.registerProvider(this);
     }
@@ -14,7 +21,28 @@ export default class ChoreographyContextPad {
             return {};
         }
 
-        const { bpmnFactory, modeling, translate } = this;
+        const { bpmnFactory, modeling, translate, elementFactory, create, autoPlace } = this;
+
+        function appendInitiatorMessage(event, element){
+            const shape = elementFactory.createShape({ type: 'choreography:InitiatorMessage' });
+            if (autoPlace) {
+                autoPlace.append(element, shape);
+            }
+            else {
+                create.start(event, shape, element);
+            }
+        }
+
+        function appendResponseMessage(event, element){
+            const shape = elementFactory.createShape({ type: 'choreography:ResponseMessage' });
+            if (autoPlace) {
+                autoPlace.append(element, shape);
+            }
+            else {
+                create.start(event, shape, element);
+            }
+        }
+
 
         function addResponder(event, taskElement) {
             const taskBO = taskElement.businessObject;
@@ -42,15 +70,33 @@ export default class ChoreographyContextPad {
 
         return {
             'append.responder': {
-                group: 'model',
+                group: 'choreography',
                 className: 'bpmn-icon-lane-insert-below',
                 title: translate('Append Responder'),
                 action: {
                     click: addResponder
+                }
+            },
+            'append.initiatorMessage':{
+                group: 'choreography',
+                className: 'bpmn-icon-start-event-message',
+                title: translate('Append Initiator Message'),
+                action: {
+                    dragstart: appendInitiatorMessage,
+                    click: appendInitiatorMessage
+                }
+            },
+             'append.reponseMessage':{
+                group: 'choreography',
+                className: 'bpmn-icon-end-event-message',
+                title: translate('Append Response Message'),
+                action: {
+                    dragstart: appendResponseMessage,
+                    click: appendResponseMessage
                 }
             }
         };
     }
 }
 
-ChoreographyContextPad.$inject = [ 'contextPad', 'bpmnFactory', 'modeling', 'translate' ];
+ChoreographyContextPad.$inject = [ 'config', 'contextPad', 'bpmnFactory', 'modeling', 'translate', 'injector', 'elementFactory', 'create' ];
