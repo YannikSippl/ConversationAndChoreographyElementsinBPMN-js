@@ -1,7 +1,8 @@
 import ChoreographyRenderer from "./ChoreographyRenderer";
 import ChoreographyRules from "./ChoreographyRules";
 import ChoreographyNameEditing from "./ChoreographyNameEditing";
-import ChoreographyContexPad from "./ChoreographyContextPad";
+import ChoreographyContextPad from "./ChoreographyContextPad";
+import ChoreographyPalette from "./ChoreographyPalette";
 
 
 export default {
@@ -9,10 +10,12 @@ export default {
         'choreographyRenderer',
         'choreographyRules',
         'choreographyNameEditing',
-        'choreographyContextPad'
+        'choreographyContextPad',
+        'choreographyPalette'
     ],
     choreographyRenderer: ['type', ChoreographyRenderer],
     choreographyRules: ['type', ChoreographyRules],
     choreographyNameEditing: ['type', ChoreographyNameEditing],
-    choreographyContextPad: ['type', ChoreographyContexPad]
+    choreographyContextPad: ['type', ChoreographyContextPad],
+    choreographyPalette: ['type', ChoreographyPalette]
 }
